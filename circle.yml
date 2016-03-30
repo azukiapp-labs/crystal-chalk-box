@@ -3,7 +3,7 @@ dependencies:
     - shards
     - libs
   pre:
-    - curl http://to.azk.io/install_crystal_and_shards | bash
+    - curl -L http://to.azk.io/install_crystal_and_shards | bash
     - shards install
 
 test:

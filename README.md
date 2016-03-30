@@ -1,4 +1,6 @@
-# chalk_box
+# Chalk Box
+
+[![Circle CI](https://circleci.com/gh/azukiapp/crystal-chalk-box/tree/master.svg?style=svg)](https://circleci.com/gh/azukiapp/crystal-chalk-box/tree/master)
 
 TODO: Write a description here
 
