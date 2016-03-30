@@ -1,0 +1,11 @@
+dependencies:
+  cache_directories:
+    - shards
+    - libs
+  pre:
+    - curl http://to.azk.io/install_crystal_and_shards | bash
+    - shards install
+
+test:
+  override:
+    - crystal spec
