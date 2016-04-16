@@ -49,9 +49,9 @@ class ChalkBox::Supports
       return 0
     elsif env_flag(@env, "COLORTERM")
       return 1
-    elsif /^xterm-256(?:color)?/ =~ @env["TERM"]
+    elsif /^xterm-256(?:color)?/ =~ @env["TERM"]?
       return 2
-    elsif /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i =~ @env["TERM"]
+    elsif /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i =~ @env["TERM"]?
       return 1
     else
       return 0
