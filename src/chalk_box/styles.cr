@@ -1,4 +1,8 @@
 module ChalkBox::Styles
+  ESCAPE_CODE = "\e"
+
+  # Foreground colors
+  #   8 default, 3 alias for gray and more 8 for extends
   FORE_DEFAULT       = ["39", "39"]
   FORE_BLACK         = ["30", "39"]
   FORE_RED           = ["31", "39"]
@@ -21,6 +25,8 @@ module ChalkBox::Styles
   FORE_LIGHT_CYAN    = ["96", "39"]
   FORE_WHITE         = ["97", "39"]
 
+  # Background colors
+  #   8 default, 3 alias for gray and more 8 for extends
   BACK_DEFAULT       = ["49", "49"]
   BACK_BLACK         = ["40", "49"]
   BACK_RED           = ["41", "49"]
@@ -43,19 +49,17 @@ module ChalkBox::Styles
   BACK_LIGHT_CYAN    = ["106", "49"]
   BACK_WHITE         = ["107", "49"]
 
-  MODE_DEFAULT   = ["0", "0"]
-  MODE_BOLD      = ["1", "22"]
-  MODE_BRIGHT    = ["1", "22"]
-  MODE_DIM       = ["2", "23"]
-  MODE_UNDERLINE = ["4", "34"]
-  MODE_BLINK     = ["5", "27"]
-  MODE_REVERSE   = ["7", "28"]
-  MODE_HIDDEN    = ["8", "29"]
+  # Modifiers
+  MOD_DEFAULT   = ["0", "0"]
+  MOD_BOLD      = ["1", "22"]
+  MOD_BRIGHT    = ["1", "22"] # Bold conflict
+  MOD_DIM       = ["2", "23"]
+  MOD_UNDERLINE = ["4", "34"]
+  MOD_BLINK     = ["5", "27"]
+  MOD_REVERSE   = ["7", "28"]
+  MOD_HIDDEN    = ["8", "29"]
 
-  COLORS = %w(black red green yellow blue magenta cyan gray grey light_gray light_grey dark_gray dark_grey light_red light_green light_yellow light_blue light_magenta light_cyan white)
-  MODES  = %w(bold bright dim underline blink reverse hidden)
-
-  module Groups
+  module Private::Stringify
     def to_s
       self.open
     end
@@ -65,11 +69,15 @@ module ChalkBox::Styles
     end
   end
 
-  module Reset
-    extend Groups
+  module Private::Reset
+    extend Stringify
+
+    macro escape(code = 0)
+      "#{ESCAPE_CODE}[#{{{code}}}m"
+    end
 
     def close
-      "\u001b[0m"
+      escape
     end
 
     def open
@@ -81,22 +89,25 @@ module ChalkBox::Styles
     end
   end
 
+  # Default reset methods expose
+  include Private::Reset
+
   macro group(group_name, key, color, bg = false, method = nil)
     module {{group_name.id}}
       extend self
-      include Reset
+      include Private::Reset
 
       module {{color.camelcase.id}}
         extend self
-        extend Groups
-        include Reset
+        extend Private::Stringify
+        include Private::Reset
 
         def open
-          "\u001b[#{{{key.id}}_{{color.upcase.id}}[0]}m"
+          escape({{key.id}}_{{color.upcase.id}}[0])
         end
 
         def close
-          "\u001b[#{{{key.id}}_{{color.upcase.id}}[1]}m"
+          escape({{key.id}}_{{color.upcase.id}}[1])
         end
       end
 
@@ -116,13 +127,16 @@ module ChalkBox::Styles
     end
   end
 
+  COLORS    = %w(black red green yellow blue magenta cyan gray grey light_gray light_grey dark_gray dark_grey light_red light_green light_yellow light_blue light_magenta light_cyan white)
+  MODIFIERS = %w(bold bright dim underline blink reverse hidden)
+
   {% for name in COLORS %}
     group Color, FORE, {{name}}
     group BgColor, BACK, {{name}}, bg: true
   {% end %}
 
-  {% for name in MODES %}
-    group Modifier, MODE, {{name}}
+  {% for name in MODIFIERS %}
+    group Modifier, MOD, {{name}}
   {% end %}
 
   def modifier
@@ -137,5 +151,5 @@ module ChalkBox::Styles
     BgColor
   end
 
-  include Reset
+  extend self
 end

@@ -5,3 +5,7 @@ authors:
   - Everton Ribeiro <nuxlli@gmail.com>
 
 license: Apache-2
+
+development_dependencies:
+  minitest:
+    github: ysbaddaden/minitest.cr

@@ -1,4 +1,4 @@
 require "./spec_helper"
 
-describe ChalkBox do
+spec_mod ChalkBox do
 end
