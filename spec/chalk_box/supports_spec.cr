@@ -17,6 +17,11 @@ spec_mod ChalkBox::Supports do
   let(:env) { {} of String => String }
   let(:stdout) { MockFD.new(true, File.open(__FILE__).fd) }
 
+  it "should not raise exception with default args" do
+    support = subject.new
+    expect(support.hasBasic).must_equal(STDOUT.tty?)
+  end
+
   it "should return true if `COLORTERM` is in env" do
     env = {"COLORTERM": "true"}
     support = subject.new(env, argv, stdout)

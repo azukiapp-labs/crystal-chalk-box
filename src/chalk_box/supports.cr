@@ -1,5 +1,8 @@
 class ChalkBox::Supports
-  def initialize(@env = ENV, @argv = ARGV, @stdout = STDOUT)
+  alias Env = Nil | Hash(String, String)
+  @env : Env
+
+  def initialize(@env = nil, @argv = ARGV, @stdout = STDOUT)
     @level = -1
     @argv = @argv.take_while { |arg| arg != "--" }
   end
@@ -49,17 +52,21 @@ class ChalkBox::Supports
       return 0
     elsif env_flag(@env, "COLORTERM")
       return 1
-    elsif /^xterm-256(?:color)?/ =~ @env["TERM"]?
+    elsif /^xterm-256(?:color)?/ =~ env_value(@env, "TERM")
       return 2
-    elsif /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i =~ @env["TERM"]?
+    elsif /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i =~ env_value(@env, "TERM")
       return 1
     else
       return 0
     end
   end
 
-  private def env_flag(env : Hash(String, String), key)
-    value = env[key]?
+  private def env_value(env : Env, key)
+    env.nil? ? ENV[key]? : env[key]?
+  end
+
+  private def env_flag(env : Env, key)
+    value = env_value(env, key)
     !(value.nil? || ["false", "0", "not"].includes?(value))
   end
 
