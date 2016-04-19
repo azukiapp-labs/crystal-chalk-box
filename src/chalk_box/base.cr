@@ -51,6 +51,7 @@ class ChalkBox::Base
     enable.hasBasic
   end
 
+  # :nodoc:
   macro def_modifier(name)
     private def buffering_{{name.id}}()
       {% if name == "reset" %}
@@ -72,13 +73,13 @@ class ChalkBox::Base
     end
   end
 
-  {% for name in Styles::COLORS %}
+  {% for name in Styles::Colors::COLORS %}
     def_modifier({{name}})
     def_modifier(bg{{name.camelcase.id}})
   {% end %}
   def_modifier("reset")
 
-  {% for name in Styles::MODIFIERS %}
+  {% for name in Styles::Colors::MODIFIERS %}
     def_modifier({{name}})
   {% end %}
 end

@@ -1,22 +1,59 @@
+# Detect whether a terminal supports color
+#
+# This module is based in [chalk/supports-color](https://github.com/chalk/supports-color)
+#
+# ## API
+#
+# The returned object specifies a level of support for color through a
+# `.level` property and a corresponding flag:
+#
+# ```text
+# .level = 1 and .hasBasic = true: Basic color support (16 colors)
+# .level = 2 and .has256 = true: 256 color support
+# .level = 3 and .has16m = true: 16 million (truecolor) support
+# ```
+#
+# ## Info
+#
+# It obeys the `--color` and `--no-color` CLI flags.
+#
+# For situations where using `--color` is not possible,
+# add an environment variable `FORCE_COLOR` with any value to force color.
+# Trumps `--no-color`.
+#
+# Explicit 256/truecolor mode can be enabled using the
+# `--color=256` and `--color=16m` flags, respectively.
+#
 class ChalkBox::Supports
-  alias Env = Nil | Hash(String, String)
-  @env : Env
-
-  def initialize(@env = nil, @argv = ARGV, @stdout = STDOUT)
+  def initialize(@env = ENV, @argv = ARGV, @stdout = STDOUT)
     @level = -1
     @argv = @argv.take_while { |arg| arg != "--" }
   end
 
-  macro def_has(name, level)
-    def {{name.id}}
-      return level >= {{level}}
+  # :nodoc:
+  class LocalMacros
+    # But have a explanation
+    macro def_has(name, level, label)
+      # Checks (if not already) and returns if have supports for {{label.id}}
+      def {{name.id}}
+        return level >= {{level}}
+      end
     end
   end
 
-  def_has(hasBasic, 1)
-  def_has(has256, 2)
-  def_has(has16m, 3)
+  LocalMacros.def_has(hasBasic, 1, "basic ANSI colors")
+  LocalMacros.def_has(has256, 2, "256 colors")
+  LocalMacros.def_has(has16m, 3, "16m colors")
 
+  # Checks (if not already) and returns colors support level
+  #
+  # Code levels:
+  #
+  # ```text
+  # 1 - for basic supports
+  # 2 - for 256 colors supports
+  # 3 - for 16m colors supports
+  # ```
   def level
     if (@level < 0)
       @level = support
@@ -61,11 +98,11 @@ class ChalkBox::Supports
     end
   end
 
-  private def env_value(env : Env, key)
-    env.nil? ? ENV[key]? : env[key]?
+  private def env_value(env, key)
+    env[key]?
   end
 
-  private def env_flag(env : Env, key)
+  private def env_flag(env, key)
     value = env_value(env, key)
     !(value.nil? || ["false", "0", "not"].includes?(value))
   end
