@@ -45,7 +45,7 @@ Basic.main
 
 ## API
 
-### chalk.<style>[.<style>...](*args)
+### chalk.style[.style...](*args)
 
 Example: `chalk.red.bold.underline("Hello", "world")`
 
