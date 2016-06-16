@@ -30,14 +30,14 @@ spec_mod ChalkBox::Base do
 
   describe "with support test object" do
     it "should format with colors if COLORTERM env is set" do
-      env = {"FORCE_COLOR": "true"}
+      env = {"FORCE_COLOR" => "true"}
       support = ChalkBox::Supports.new(env)
       chalk = subject.new(enable: support)
       expect(chalk.underline("foo")).must_equal "\u001b[4mfoo\u001b[34m"
     end
 
     it "should not output colors when COLORTERM env is set false" do
-      env = {"FORCE_COLOR": "false"}
+      env = {"FORCE_COLOR" => "false"}
       support = ChalkBox::Supports.new(env)
       chalk = subject.new(enable: support)
       expect(chalk.underline("foo")).must_equal "foo"
@@ -45,7 +45,7 @@ spec_mod ChalkBox::Base do
   end
 
   describe "with enabled colors" do
-    let(:chalk) { subject.new(enable: true) }
+    let(:chalk, SubjectType) { subject.new(enable: true) }
 
     it "should style string" do
       expect(chalk.underline("foo")).must_equal "\u001b[4mfoo\u001b[34m"

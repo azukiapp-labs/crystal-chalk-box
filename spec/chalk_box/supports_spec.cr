@@ -2,7 +2,7 @@ require "../spec_helper"
 
 module ChalkBox::SpecHelpers
   class MockFD < IO::FileDescriptor
-    def initialize(@tty, *args)
+    def initialize(@tty = false, *args)
       super(*args)
     end
 
@@ -23,7 +23,7 @@ spec_mod ChalkBox::Supports do
   end
 
   it "should return true if `COLORTERM` is in env" do
-    env = {"COLORTERM": "true"}
+    env = {"COLORTERM" => "true"}
     support = subject.new(env, argv, stdout)
     expect(support.hasBasic).must_equal(true)
     expect(support.level).must_equal(1)
@@ -37,14 +37,14 @@ spec_mod ChalkBox::Supports do
     end
 
     it "should not support if dump term" do
-      env = {"TERM": "dump"}
+      env = {"TERM" => "dump"}
       support = subject.new(env, argv, stdout)
       expect(support.hasBasic).must_equal(false)
       expect(support.level).must_equal(0)
     end
 
     it "should support basics TERM" do
-      env = {"TERM": "xterm"}
+      env = {"TERM" => "xterm"}
       support = subject.new(env, argv, stdout)
       expect(support.hasBasic).must_equal(true)
       expect(support.level).must_equal(1)
@@ -52,7 +52,7 @@ spec_mod ChalkBox::Supports do
   end
 
   describe "if xterm is 256 colors" do
-    let(:env) { {"TERM": "xterm-256color"} }
+    let(:env) { {"TERM" => "xterm-256color"} }
 
     it "should support by default" do
       support = subject.new(env, argv, stdout)
@@ -145,7 +145,7 @@ spec_mod ChalkBox::Supports do
   end
 
   it("should return true if `FORCE_COLOR` is in env") do
-    env = {"FORCE_COLOR": "true"}
+    env = {"FORCE_COLOR" => "true"}
     argv = ["--color=false"]
     support = subject.new(env)
     expect(support.hasBasic).must_equal(true, "FORCE_COLOR")
@@ -153,7 +153,7 @@ spec_mod ChalkBox::Supports do
   end
 
   it "should allow tests of the properties on false" do
-    env = {"TERM": "xterm-256color"}
+    env = {"TERM" => "xterm-256color"}
     argv = ["--color=false"]
     support = subject.new(env, argv)
     expect(support.hasBasic).must_equal(false)

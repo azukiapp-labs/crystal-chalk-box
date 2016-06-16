@@ -25,8 +25,13 @@
 # `--color=256` and `--color=16m` flags, respectively.
 #
 class ChalkBox::Supports
+  @env : ENV.class | Hash(String, String)
+
+  @argv : Array(String)
+  @stdout : IO::FileDescriptor
+  @level = -1
+
   def initialize(@env = ENV, @argv = ARGV, @stdout = STDOUT)
-    @level = -1
     @argv = @argv.take_while { |arg| arg != "--" }
   end
 
@@ -57,7 +62,7 @@ class ChalkBox::Supports
   def level
     if (@level < 0)
       @level = support
-      @level = 1 if @level == 0 && env_flag(@env, "FORCE_COLOR")
+      @level = 1 if @level == 0 && env_flag(@env, :FORCE_COLOR)
     end
     return @level
   end
@@ -87,11 +92,11 @@ class ChalkBox::Supports
       return 3
     elsif !@stdout.tty?
       return 0
-    elsif env_flag(@env, "COLORTERM")
+    elsif env_flag(@env, :COLORTERM)
       return 1
-    elsif /^xterm-256(?:color)?/ =~ env_value(@env, "TERM")
+    elsif /^xterm-256(?:color)?/ =~ env_value(@env, :TERM)
       return 2
-    elsif /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i =~ env_value(@env, "TERM")
+    elsif /^screen|^xterm|^vt100|color|ansi|cygwin|linux/i =~ env_value(@env, :TERM)
       return 1
     else
       return 0
@@ -99,7 +104,7 @@ class ChalkBox::Supports
   end
 
   private def env_value(env, key)
-    env[key]?
+    env[key.to_s]?
   end
 
   private def env_flag(env, key)
