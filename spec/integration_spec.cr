@@ -11,9 +11,9 @@ end
 
 describe "Integration spec" do
   def run(command, env = nil, chdir = nil)
-    output, error = MemoryIO.new, MemoryIO.new
+    output, error = IO::Memory.new, IO::Memory.new
     status = Process.run(
-      "/bin/sh", input: MemoryIO.new(command), output: output, error: error,
+      "/bin/sh", input: IO::Memory.new(command), output: output, error: error,
       chdir: chdir, env: env
     )
 
