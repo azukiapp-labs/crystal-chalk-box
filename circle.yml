@@ -1,13 +1,13 @@
 dependencies:
   cache_directories:
-    - shards
-    - libs
+    - lib
   pre:
     - curl http://dist.crystal-lang.org/apt/setup.sh | sudo bash
     - sudo apt-get install crystal -y
+    - crystal --version
+    - shards --version
     - shards install
 
 test:
   override:
-    - crystal --version | shards --version
     - crystal spec -v
