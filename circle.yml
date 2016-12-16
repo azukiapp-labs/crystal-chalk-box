@@ -3,9 +3,11 @@ dependencies:
     - shards
     - libs
   pre:
-    - curl -L http://to.azk.io/install_crystal_and_shards | bash
+    - curl http://dist.crystal-lang.org/apt/setup.sh | sudo bash
+    - sudo apt-get install crystal -y
     - shards install
 
 test:
   override:
-    - crystal spec
+    - crystal --version | shards --version
+    - crystal spec -v
